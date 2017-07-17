@@ -475,21 +475,21 @@
                     "name":"Ceph-OSD-Node1",
                     "template":"UCS-S3260-OSD-Node1",
                     "suffix":"1",
-                    "instances":"5"
+                    "instances":"3"
                 },
                 "Ceph-OSD-Node2-":{
                     "dn":"org-root",
                     "name":"Ceph-OSD-Node2",
                     "template":"UCS-S3260-OSD-Node2",
                     "suffix":"1",
-                    "instances":"5"
+                    "instances":"3"
                 },
                 "UCS-C220-M4S-":{
                     "dn":"org-root",
                     "name":"UCS-C220-M4S",
                     "template":"UCS-C220M4S",
                     "suffix":"1",
-                    "instances":"4"
+                    "instances":"7"
                 }
             }
         }
