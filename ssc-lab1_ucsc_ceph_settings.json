@@ -1,0 +1,499 @@
+{
+    "ucsm": {
+        "title": "ucsm configuration",
+        "credentials": {
+            "ip": "10.1.212.46",
+            "user": "admin",
+            "pw": "cisco",
+            "domain_group": "root"
+        },
+        "policies":{
+            "timezone":"America/New_York (Eastern Time)",
+            "ntp":{
+                "time.statestr.com":{
+                    "dn":"sys/svc-ext/datetime-svc",
+                    "name":"time.statestr.com",
+                    "descr":"ntp server"
+                }
+            },
+            "dns":{
+                "ssc_dns":{
+                    "dn":"sys/svc-ext/dns-svc",
+                    "name":"161.194.35.226",
+                    "descr":"DNS Server"
+                }
+            },
+            "general":{
+                "global":{
+                    "dn": "org-root",
+                    "backplane": "40G",
+                    "discovery": "platform-max"
+                },
+                "qos_class":{
+                    "dn":"domaingroup-root/fabric/lan/classes"
+                }
+            }
+        },
+        "fi_ports":{
+            "server":{
+                "fabric/server/sw-A":{
+                    "dn":"fabric/server/sw-A",
+                    "slot_id":"1",
+                    "port_id":["17","18","19","20","21","22","23","25","26","27","28","29","30"]
+                },
+                "fabric/server/sw-B":{
+                    "dn":"fabric/server/sw-B",
+                    "slot_id":"1",
+                    "port_id":["17","18","19","20","21","22","23","25","26","27","28","29","30"]
+                }
+            },
+            "uplinks":{
+                "fabric/lan/A":{
+                    "dn":"fabric/lan/A",
+                    "slot_id":"1",
+                    "port_id":["31","32","33","34"]
+                },
+                "fabric/lan/B":{
+                    "dn":"fabric/lan/B",
+                    "slot_id":"1",
+                    "port_id":["31","32","33","34"]
+                }
+            }
+        },
+        "labels":{
+            "chassis":{
+                "sys/chassis-1":{
+                    "dn":"sys/chassis-1",
+                    "label":"Ceph OSD 1/2"
+                },
+                "sys/chassis-2":{
+                    "dn":"sys/chassis-2",
+                    "label":"Ceph OSD 3/4"
+                },
+                "sys/chassis-3":{
+                    "dn":"sys/chassis-3",
+                    "label":"Ceph OSD 5/6"
+                }
+            },
+            "servers":{
+                "sys/chassis-1/blade-1":{
+                    "dn":"sys/chassis-1/blade-1",
+                    "label":"Ceph OSD 1",
+                    "lc":"undiscovered"
+                },
+                "sys/chassis-1/blade-2":{
+                    "dn":"sys/chassis-1/blade-2",
+                    "label":"Ceph OSD 2",
+                    "lc":"undiscovered"
+                },
+                "sys/chassis-2/blade-1":{
+                    "dn":"sys/chassis-2/blade-1",
+                    "label":"Ceph OSD 3",
+                    "lc":"undiscovered"
+                },
+                "sys/chassis-2/blade-2":{
+                    "dn":"sys/chassis-2/blade-2",
+                    "label":"Ceph OSD 4",
+                    "lc":"undiscovered"
+                },
+                "sys/chassis-3/blade-1":{
+                    "dn":"sys/chassis-3/blade-1",
+                    "label":"Ceph OSD 5",
+                    "lc":"undiscovered"
+                },
+                "sys/chassis-3/blade-2":{
+                    "dn":"sys/chassis-3/blade-2",
+                    "label":"Ceph OSD 6",
+                    "lc":"undiscovered"
+                },
+                "sys/rack-unit-1":{
+                    "dn":"sys/rack-unit-1",
+                    "label":"Ceph Mon 1",
+                    "lc":"discovered"
+                },
+                "sys/rack-unit-2":{
+                    "dn":"sys/rack-unit-2",
+                    "label":"Ceph Mon 2",
+                    "lc":"discovered"
+                },
+                "sys/rack-unit-3":{
+                    "dn":"sys/rack-unit-3",
+                    "label":"Ceph Mon 3",
+                    "lc":"discovered"
+                },
+                "sys/rack-unit-4":{
+                    "dn":"sys/rack-unit-4",
+                    "label":"Ceph Mon 4",
+                    "lc":"discovered"
+                },
+                "sys/rack-unit-5":{
+                    "dn":"sys/rack-unit-5",
+                    "label":"Ceph Mon 5",
+                    "lc":"discovered"
+                },
+                "sys/rack-unit-6":{
+                    "dn":"sys/rack-unit-6",
+                    "label":"Ceph Mon 6",
+                    "lc":"discovered"
+                },
+                "sys/rack-unit-7":{
+                    "dn":"sys/rack-unit-7",
+                    "label":"Ceph Adm",
+                    "lc":"discovered"
+                }
+            }
+        },
+        "register":{
+            "ucsc_address":"10.10.17.28",
+            "shared_secret":"cisco"
+        }
+    },
+    "ucsc": {
+        "title": "ucsc configuration",
+        "credentials": {
+            "ip": "10.10.17.28",
+            "user": "admin",
+            "pw": "cisco"
+        },
+        "pools": {
+            "dn": "org-root",
+            "kvm_ip":{
+                "ceph-ext-mgmt":{
+                    "dn": "org-root",
+                    "name": "ceph-ext-mgmt",
+                    "descr": "ceph-ext-mgmt",
+                    "from": "10.1.212.165",
+                    "to": "10.1.212.180",
+                    "def_gw": "10.1.212.250"
+                }
+            },
+            "mac": {
+                "UCS-Ceph-MAC-Pool": {
+                    "name": "UCS-Ceph-MAC-Pool",
+                    "dn": "org-root",
+                    "descr": "MAC Pool for S3260 and C220M4S",
+                    "from": "00:25:B6:00:00:00",
+                    "to": "00:25:B6:00:00:63"
+                }
+            },
+            "uuid":{
+                "UCS-Ceph-UUID-Pool":{
+                    "name": "UCS-Ceph-UUID-Pool",
+                    "dn": "org-root",
+                    "descr": "UUID Pool for S3260 and C220M4S",
+                    "from": "0000-000000005001",
+                    "to": "0000-000000005021",
+                    "prefix": "derived"
+                }
+            },
+            "server":{
+                "S3260-Node1":{
+                    "name":"S3260-Node1",
+                    "type": "S3260",
+                    "dn":"org-root",
+                    "descr":"Cisco UCS S3260 Top Node Server Pool",
+                    "slot": "1",
+                    "count": "3"
+                },
+                "S3260-Node2":{
+                    "name":"S3260-Node2",
+                    "type": "S3260",
+                    "dn":"org-root",
+                    "descr":"Cisco UCS S3260 Bottom Node Server Pool",
+                    "slot": "2",
+                    "count": "3"
+                },
+                "C220-M4S":{
+                    "name":"C220-M4S",
+                    "type": "C220",
+                    "dn":"org-root",
+                    "descr":"Cisco UCS C220M-M4S Server Pool",
+                    "count":"7"
+                }
+            },
+            "vlan":{
+                "Default":{
+                    "name": "Default",
+                    "dn": "domaingroup-root/fabric/lan",
+                    "id": "192"
+                },
+                "Public":{
+                    "name": "Public",
+                    "dn": "domaingroup-root/fabric/lan",
+                    "id": "193"
+                },
+                "Cluster":{
+                    "name": "Cluster",
+                    "dn": "domaingroup-root/fabric/lan",
+                    "id": "900"
+                }
+            }
+        },
+        "policies":{
+            "network_control":{
+                "Enable-CDP": {
+                    "dn": "org-root",
+                    "name": "Enable-CDP",
+                    "descr": "Cisco Discovery Protocol (CDP) is enabled"
+                }
+            },
+            "qos":{
+                "QoS-Ceph":{
+                    "dn":"org-root",
+                    "name": "QoS-Ceph"
+                }
+            },
+            "vnic_template":{
+                "Default-NIC":{
+                    "dn": "org-root",
+                    "name": "Default-NIC",
+                    "descr": "Default NIC Template",
+                    "switch_id": "A-B",
+                    "mtu": "1500",
+                    "qos": "QoS-Ceph",
+                    "mac": "UCS-Ceph-MAC-Pool",
+                    "net": "Enable-CDP",
+                    "vlan": "Default",
+                    "native": "yes"
+                },
+                "PublicA-NIC":{
+                    "dn": "org-root",
+                    "name": "PublicA-NIC",
+                    "descr": "PublicA NIC Template",
+                    "switch_id": "A-B",
+                    "mtu": "9000",
+                    "mac": "UCS-Ceph-MAC-Pool",
+                    "qos": "QoS-Ceph",
+                    "net": "Enable-CDP",
+                    "vlan": "Public",
+                    "native": "no"
+                },
+                "PublicB-NIC":{
+                    "dn": "org-root",
+                    "name": "PublicB-NIC",
+                    "descr": "PublicB NIC Template",
+                    "switch_id": "B-A",
+                    "mtu": "9000",
+                    "mac": "UCS-Ceph-MAC-Pool",
+                    "qos": "QoS-Ceph",
+                    "net": "Enable-CDP",
+                    "vlan": "Public",
+                    "native": "no"
+                },
+                "Cluster-NIC":{
+                    "dn": "org-root",
+                    "name": "Cluster-NIC",
+                    "descr": "Cluster NIC Template",
+                    "switch_id": "B-A",
+                    "mtu": "9000",
+                    "mac": "UCS-Ceph-MAC-Pool",
+                    "qos": "QoS-Ceph",
+                    "net": "Enable-CDP",
+                    "vlan": "Cluster",
+                    "native": "no"
+                }
+            },
+            "adapter":{
+                "RHEL":{
+                    "dn": "org-root",
+                    "name": "RHEL",
+                    "descr": "RHEL"
+                }
+            },
+            "bios":{
+                "Ceph":{
+                    "dn": "org-root",
+                    "name": "Ceph",
+                    "descr": "BIOS Policy for Ceph"
+                }
+            },
+            "boot":{
+                "Ceph-Boot": {
+                    "dn": "org-root",
+                    "name": "Ceph-Boot",
+                    "descr": "Ceph Boot Policy"
+                }
+            },
+            "maintenance": {
+                "Server-Maint":{
+                    "dn": "org-root",
+                    "name": "Server-Maint",
+                    "descr": "UCS Server Maintenance Policy for Ceph"
+                }
+            },
+            "power_control":{
+                "No-Power-Cap":{
+                    "dn": "org-root",
+                    "name": "No-Power-Cap",
+                    "descr": "Poer Cap Policy for Ceph"
+                }
+            },
+            "disk_scrub":{
+                "Disk-Scrub":{
+                    "dn": "org-root",
+                    "name": "Disk-Scrub",
+                    "descr": "Scrub all disks after removing the profile",
+                    "scrub": "yes"
+                }
+            }
+        },
+        "chassis_profiles":{
+            "firmware_packages":{
+                "UCS-S3260-Firm":{
+                    "dn": "org-root",
+                    "name": "UCS-S3260-Firm",
+                    "descr": "Firmware Package for UCS S3260",
+                    "bundle": "3.1(2b)C"
+                }
+            },
+            "maintenance":{
+                "UCS-S3260-Main":{
+                    "dn": "org-root",
+                    "name": "UCS-S3260-Main",
+                    "descr": "Maintenance Policy for UCS S3260"
+                }
+            },
+            "disk_zoning":{
+                "UCS-S3260-Zoning":{
+                    "dn": "org-root",
+                    "name": "UCS-S3260-Zoning",
+                    "descr": "Disk Zoning Policy for UCS S3260"
+                }
+            },
+            "profile_templates":{
+                "UCS-S3260":{
+                    "dn": "org-root",
+                    "name": "UCS-S3260",
+                    "descr": "Chassis Template for UCS S3260",
+                    "maintenance": "UCS-S3260-Main",
+                    "firmware_package": "UCS-S3260-Firm",
+                    "disk_zoning": "UCS-S3260-Zoning"
+                }
+            },
+            "profiles":{
+                "S3260-Dual-":{
+                    "dn": "org-root",
+                    "name": "S3260-Dual",
+                    "suffix": "1",
+                    "instances": "5",
+                    "template": "UCS-S3260"
+                }
+            }
+        },
+        "storage_profiles":{
+            "dn":"org-root",
+            "S3260":{
+                "S3260-Node1":{
+                    "dn":"org-root",
+                    "name":"S3260-Node1",
+                    "descr":"Storage Profile for S3260 Top Node"
+                },
+                "S3260-Node2": {
+                    "dn": "org-root",
+                    "name": "S3260-Node2",
+                    "descr": "Storage Profile for S3260 Bottom Node"
+                }
+            },
+            "C220":{
+                "C220-Boot":{
+                    "dn": "org-root",
+                    "name": "C220-Boot",
+                    "descr": "Storage Profile for Ceph Monitor and Admin Nodes"
+                }
+            }
+        },
+        "service_profiles":{
+            "dn":"org-root",
+            "S3260_templates":{
+                "UCS-S3260-OSD-Node1":{
+                    "dn":"org-root",
+                    "name":"UCS-S3260-OSD-Node1",
+                    "descr":"UCS-S3260-OSD-Node1",
+                    "uuid":"UCS-Ceph-UUID-Pool",
+                    "storage":"S3260-Node1",
+                    "vnic1_name":"Default",
+                    "vnic2_name":"PublicA",
+                    "vnic3_name":"OSD-Cluster",
+                    "vnic1_template":"Default-NIC",
+                    "vnic2_template":"PublicA-NIC",
+                    "vnic3_template":"Cluster-NIC",
+                    "vnic_adapter":"RHEL",
+                    "boot":"Ceph-Boot",
+                    "maint":"Server-Maint",
+                    "pool":"S3260-Node1",
+                    "slot_id":"1",
+                    "bios":"Ceph",
+                    "power":"No-Power-Cap",
+                    "scrub":"Disk-Scrub"
+                },
+                "UCS-S3260-OSD-Node2":{
+                    "dn":"org-root",
+                    "name":"UCS-S3260-OSD-Node2",
+                    "descr":"UCS-S3260-OSD-Node2",
+                    "uuid":"UCS-Ceph-UUID-Pool",
+                    "storage":"S3260-Node2",
+                    "vnic1_name":"Default",
+                    "vnic2_name":"PublicB",
+                    "vnic3_name":"OSD-Cluster",
+                    "vnic1_template":"Default-NIC",
+                    "vnic2_template":"PublicB-NIC",
+                    "vnic3_template":"Cluster-NIC",
+                    "vnic_adapter":"RHEL",
+                    "boot":"Ceph-Boot",
+                    "maint":"Server-Maint",
+                    "pool":"S3260-Node2",
+                    "slot_id":"2",
+                    "bios":"Ceph",
+                    "power":"No-Power-Cap",
+                    "scrub":"Disk-Scrub"
+                }
+            },
+            "C220_templates":{
+                "UCS-C220M4S":{
+                    "dn":"org-root",
+                    "name":"UCS-C220M4S",
+                    "descr":"UCS-C220M4S",
+                    "uuid":"UCS-Ceph-UUID-Pool",
+                    "storage":"C220-Boot",
+                    "vnic1_name":"Default",
+                    "vnic2_name":"PublicA",
+                    "vnic1_template":"Default-NIC",
+                    "vnic2_template":"PublicA-NIC",
+                    "vnic_adapter":"RHEL",
+                    "boot":"Ceph-Boot",
+                    "maint":"Server-Maint",
+                    "pool":"C220-M4S",
+                    "slot_id":"2",
+                    "bios":"Ceph",
+                    "power":"No-Power-Cap",
+                    "scrub":"Disk-Scrub"
+                }
+            },
+            "profiles":{
+                "Ceph-OSD-Node1-":{
+                    "dn":"org-root",
+                    "name":"Ceph-OSD-Node1",
+                    "template":"UCS-S3260-OSD-Node1",
+                    "suffix":"1",
+                    "instances":"5"
+                },
+                "Ceph-OSD-Node2-":{
+                    "dn":"org-root",
+                    "name":"Ceph-OSD-Node2",
+                    "template":"UCS-S3260-OSD-Node2",
+                    "suffix":"1",
+                    "instances":"5"
+                },
+                "UCS-C220-M4S-":{
+                    "dn":"org-root",
+                    "name":"UCS-C220-M4S",
+                    "template":"UCS-C220M4S",
+                    "suffix":"1",
+                    "instances":"4"
+                }
+            }
+        }
+    }
+}
+
+
