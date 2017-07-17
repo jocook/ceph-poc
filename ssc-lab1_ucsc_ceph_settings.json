@@ -375,7 +375,7 @@
                     "dn": "org-root",
                     "name": "S3260-Dual",
                     "suffix": "1",
-                    "instances": "5",
+                    "instances": "3",
                     "template": "UCS-S3260"
                 }
             }
