@@ -2,6 +2,7 @@ import sys
 import json
 import ucscceph
 import ucsmceph
+import time
 
 ucsm = ucsmceph.UcsmCeph()
 ucsc = ucscceph.UcscCeph()
@@ -18,11 +19,14 @@ if __name__ == "__main__":
         print "\n#######################################################"
         print "################UCSM Deployment #######################"
         print "#######################################################"
-        #ucsm.deploy(settings)
+        ucsm.deploy(settings)
+        #print "Waiting 30 seconds..."
+        #time.sleep(30)
         print "\n#######################################################"
         print "################UCSC Deployment #######################"
         print "#######################################################"
         ucsc.deploy(settings)
+
 
     except Exception, err:
         print "Exception:", str(err)

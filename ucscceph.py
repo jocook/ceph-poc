@@ -11,8 +11,6 @@ from ucscsdk.mometa.compute.ComputePooledRackUnit import ComputePooledRackUnit
 from ucscsdk.mometa.compute.ComputePooledSlot import ComputePooledSlot
 from ucscsdk.mometa.nwctrl.NwctrlDefinition import NwctrlDefinition
 from ucscsdk.mometa.dpsec.DpsecMac import DpsecMac
-from ucscsdk.mometa.qosclass.QosclassEthBE import QosclassEthBE
-from ucscsdk.mometa.qosclass.QosclassFc import QosclassFc
 from ucscsdk.mometa.epqos.EpqosDefinition import EpqosDefinition
 from ucscsdk.mometa.epqos.EpqosEgress import EpqosEgress
 from ucscsdk.mometa.vnic.VnicLanConnTempl import VnicLanConnTempl
@@ -107,6 +105,12 @@ from ucscsdk.mometa.fabric.FabricVCon import FabricVCon
 from ucscsdk.mometa.ls.LsServer import LsServer
 from ucscsdk.mometa.equipment.EquipmentChassisProfile import EquipmentChassisProfile
 from ucscsdk.mometa.equipment.EquipmentBinding import EquipmentBinding
+from ucscsdk.mometa.fabric.FabricVlanReq import FabricVlanReq
+from ucscsdk.utils.ucscdomain import get_domain
+from ucscsdk.utils.ucscdomain import domain_assign_to_domaingroup
+from ucscsdk.mometa.fcpool.FcpoolInitiators import FcpoolInitiators
+from ucscsdk.mometa.fcpool.FcpoolBlock import FcpoolBlock
+import re
 
 class UcscCeph:
     """UcscCeph Class"""
@@ -117,10 +121,29 @@ class UcscCeph:
     def check_settings(self, settings):
         pass
 
-    def create_pools(self, s_pools):
+    def get_system_id(self,handle,ucsm_ip):
+        """
+        Get system_id
+        """
+
+
+        object = get_domain(handle, domain_ip=ucsm_ip, domain_name="") #ucsm_ip should be IP and not hostname
+
+        re.findall(r'\W*id[^:]*:\D*(\d+)', str(object))
+
+        system_id = ''.join(re.findall(r'\W*id[^:]*:\D*(\d+)', str(object)))
+
+        return system_id
+
+
+
+    def create_pools(self, s_pools, system_id):
         """ Pools """
 
         pools = {}
+
+        pools_dn = str(s_pools['dn'])
+
 
         """
         KVM IP Pool
@@ -207,8 +230,41 @@ class UcscCeph:
 
         """
         Server Pools
-            *still fixed system_ids, chassis_ids, ids
         """
+
+
+        
+        server_pools = {}
+
+        for key in s_pools['server']:
+            s_name = str(s_pools['server'][key]['name'])
+            s_dn = str(s_pools['server'][key]['dn'])
+            s_descr = str(s_pools['server'][key]['descr'])
+            s_type = str(s_pools['server'][key]['type'])
+            s_count = int(s_pools['server'][key]['count'])
+
+            mo = ComputePool(parent_mo_or_dn=s_dn, name=s_name,
+                         descr=s_descr)
+
+            server_pools.update({key: {'mo':mo}})
+
+            if s_type == "S3260":
+                s_slot = str(s_pools['server'][key]['slot'])
+                for count in range(1,s_count+1):
+                    server_pools[key]['mo_' + str(count)] = ComputePooledSlot(parent_mo_or_dn=mo, system_id=system_id,
+                                                                               slot_id=s_slot, chassis_id=str(count))
+            elif s_type == "C220":
+                for count in range(1,s_count+1):
+                    server_pools[key]['mo_' + str(count)] = ComputePooledRackUnit(parent_mo_or_dn=mo, system_id=system_id, id=str(count))
+
+
+        pools.update({'server': server_pools})
+        print "> Servers.........................................[OK]"
+
+
+
+        """
+
 
         server_pools = {}
 
@@ -216,13 +272,16 @@ class UcscCeph:
         s_dn = str(s_pools['server']['S3260-Node1']['dn'])
         s_descr = str(s_pools['server']['S3260-Node1']['descr'])
 
+
+
+
         mo = ComputePool(parent_mo_or_dn=s_dn, name=s_name,
                          descr=s_descr)
-        mo_1 = ComputePooledSlot(parent_mo_or_dn=mo, system_id="0", slot_id="1", chassis_id="1")
-        mo_2 = ComputePooledSlot(parent_mo_or_dn=mo, system_id="0", slot_id="1", chassis_id="2")
-        mo_3 = ComputePooledSlot(parent_mo_or_dn=mo, system_id="0", slot_id="1", chassis_id="3")
-        mo_4 = ComputePooledSlot(parent_mo_or_dn=mo, system_id="0", slot_id="1", chassis_id="4")
-        mo_5 = ComputePooledSlot(parent_mo_or_dn=mo, system_id="0", slot_id="1", chassis_id="5")
+        mo_1 = ComputePooledSlot(parent_mo_or_dn=mo, system_id=system_id, slot_id="1", chassis_id="1")
+        mo_2 = ComputePooledSlot(parent_mo_or_dn=mo, system_id=system_id, slot_id="1", chassis_id="2")
+        mo_3 = ComputePooledSlot(parent_mo_or_dn=mo, system_id=system_id, slot_id="1", chassis_id="3")
+        mo_4 = ComputePooledSlot(parent_mo_or_dn=mo, system_id=system_id, slot_id="1", chassis_id="4")
+        mo_5 = ComputePooledSlot(parent_mo_or_dn=mo, system_id=system_id, slot_id="1", chassis_id="5")
 
         server_pools.update({'S3260-Node1': {'mo':mo,
                                              'mo_1':mo_1,
@@ -238,11 +297,11 @@ class UcscCeph:
 
         mo = ComputePool(parent_mo_or_dn=s_dn, name=s_name,
                          descr=s_descr)
-        mo_1 = ComputePooledSlot(parent_mo_or_dn=mo, system_id="0", slot_id="2", chassis_id="1")
-        mo_2 = ComputePooledSlot(parent_mo_or_dn=mo, system_id="0", slot_id="2", chassis_id="2")
-        mo_3 = ComputePooledSlot(parent_mo_or_dn=mo, system_id="0", slot_id="2", chassis_id="3")
-        mo_4 = ComputePooledSlot(parent_mo_or_dn=mo, system_id="0", slot_id="2", chassis_id="4")
-        mo_5 = ComputePooledSlot(parent_mo_or_dn=mo, system_id="0", slot_id="2", chassis_id="5")
+        mo_1 = ComputePooledSlot(parent_mo_or_dn=mo, system_id=system_id, slot_id="2", chassis_id="1")
+        mo_2 = ComputePooledSlot(parent_mo_or_dn=mo, system_id=system_id, slot_id="2", chassis_id="2")
+        mo_3 = ComputePooledSlot(parent_mo_or_dn=mo, system_id=system_id, slot_id="2", chassis_id="3")
+        mo_4 = ComputePooledSlot(parent_mo_or_dn=mo, system_id=system_id, slot_id="2", chassis_id="4")
+        mo_5 = ComputePooledSlot(parent_mo_or_dn=mo, system_id=system_id, slot_id="2", chassis_id="5")
 
         server_pools.update({'S3260-Node2': {'mo':mo,
                                              'mo_1':mo_1,
@@ -258,10 +317,10 @@ class UcscCeph:
 
         mo = ComputePool(parent_mo_or_dn=s_dn, name=s_name,
                          descr=s_descr)
-        mo_1 = ComputePooledRackUnit(parent_mo_or_dn=mo, system_id="0", id="1")
-        mo_2 = ComputePooledRackUnit(parent_mo_or_dn=mo, system_id="0", id="2")
-        mo_3 = ComputePooledRackUnit(parent_mo_or_dn=mo, system_id="0", id="3")
-        mo_4 = ComputePooledRackUnit(parent_mo_or_dn=mo, system_id="0", id="4")
+        mo_1 = ComputePooledRackUnit(parent_mo_or_dn=mo, system_id=system_id, id="1")
+        mo_2 = ComputePooledRackUnit(parent_mo_or_dn=mo, system_id=system_id, id="2")
+        mo_3 = ComputePooledRackUnit(parent_mo_or_dn=mo, system_id=system_id, id="3")
+        mo_4 = ComputePooledRackUnit(parent_mo_or_dn=mo, system_id=system_id, id="4")
 
         server_pools.update({'C220-M4S': {'mo':mo,
                                           'mo_1':mo_1,
@@ -273,6 +332,8 @@ class UcscCeph:
         pools.update({'server': server_pools})
 
         print "> Servers.........................................[OK]"
+
+        """
 
         """
         VLANs
@@ -296,13 +357,17 @@ class UcscCeph:
 
             vlans.update({key: {'mo': mo}})
 
+            mo = FabricVlanReq(parent_mo_or_dn=pools_dn,
+                               name=v_name)
+
+            vlans.update({key + "_permit": {'mo': mo}})
+
         pools.update({'vlan': vlans})
 
         print "> VLANs...........................................[OK]"
 
         return pools
 
-        pass
 
     def create_policies(self, s_policies):
         """ Policies """
@@ -635,7 +700,7 @@ class UcscCeph:
 
         return policies
 
-    def create_chassis_profiles(self, s_chassis_profiles):
+    def create_chassis_profiles(self, s_chassis_profiles, system_id):
         """ Chassis Profile"""
 
         chassis_profiles = {}
@@ -1026,7 +1091,7 @@ class UcscCeph:
 
             for instance in range(cp_suffix, cp_instances + 1):
                 cp_name_ins = "%s-%s" % (cp_name,instance)
-                cp_chassis_dn = "sys/chassis-%s" % (instance)
+                cp_chassis_dn = "compute/sys-" + system_id + "/chassis-%s" % (instance)
                 print cp_chassis_dn
                 mo = EquipmentChassisProfile(parent_mo_or_dn=cp_dn,
                             src_templ_name=cp_template,
@@ -1035,7 +1100,7 @@ class UcscCeph:
                 mo_1 = EquipmentBinding(parent_mo_or_dn=mo,
                                         chassis_dn=cp_chassis_dn,
                                         restrict_migration="no")
-                profiles.update({cp_name_ins: {'mo':mo}})
+                profiles.update({cp_name_ins: {'mo':mo,'mo_1':mo_1}})
 
         chassis_profiles.update({'profiles': profiles})
 
@@ -1153,7 +1218,7 @@ handle.commit()
 
         """
         Service Profile Templates for S3260
-            *ext_ip_pool_name="ceph-ext-mgmt"
+            *ext_ip_pool_name="ceph-ext-mgmt" (fixed, should be var)
         """
 
         s3260_templates = {}
@@ -1178,7 +1243,7 @@ handle.commit()
             t_scrub = str(s_service_profiles['S3260_templates'][key]['scrub'])
 
 
-            mo = LsServer(parent_mo_or_dn=service_dn, vmedia_policy_name="", ext_ip_state="none",
+            mo = LsServer(parent_mo_or_dn=service_dn, vmedia_policy_name="", ext_ip_state="pooled",
                           bios_profile_name=t_bios, mgmt_fw_policy_name="", agent_policy_name="",
                           mgmt_access_policy_name="", dynamic_con_policy_name="",
                           sol_policy_name="", uuid="0", descr=t_descr, stats_policy_name="",
@@ -1186,7 +1251,7 @@ handle.commit()
                           host_fw_policy_name="", vcon_profile_name="", ident_pool_name=t_uuid, src_templ_name="",
                           type="initial-template", local_disk_policy_name="", scrub_policy_name=t_scrub,
                           power_policy_name=t_power, maint_policy_name=t_maint,
-                          name=t_name)
+                          name=t_name) #resolve_remote = yes, stats_policy_name="default", power_sync_policy_name=""
             mo_1 = LsVConAssign(parent_mo_or_dn=mo, admin_vcon="1", admin_host_port="ANY", order="1",
                                 transport="ethernet", vnic_name=t_vnic1_name)
             mo_2 = LsVConAssign(parent_mo_or_dn=mo, admin_vcon="1", admin_host_port="ANY", order="3",
@@ -1196,24 +1261,24 @@ handle.commit()
             mo_4 = VnicDefBeh(parent_mo_or_dn=mo, name="", descr="", action="none", type="vhba",
                               nw_templ_name="")
             mo_5 = VnicEther(parent_mo_or_dn=mo, nw_ctrl_policy_name="", admin_host_port="ANY",
-                             admin_vcon="1", stats_policy_name="", admin_cdn_name="", switch_id="A",
+                             admin_vcon="1", stats_policy_name="", admin_cdn_name="", switch_id="A-B",
                              pin_to_group_name="", name=t_vnic1_name, order="1", qos_policy_name="",
                              adaptor_profile_name=t_vnic_adapter, ident_pool_name="", cdn_source="vnic-name",
                              mtu="1500",
                              nw_templ_name=t_vnic1_template, addr="derived")
             mo_6 = VnicEther(parent_mo_or_dn=mo, nw_ctrl_policy_name="", admin_host_port="ANY",
-                             admin_vcon="1", stats_policy_name="", admin_cdn_name="", switch_id="B",
+                             admin_vcon="1", stats_policy_name="", admin_cdn_name="", switch_id="B-A",
                              pin_to_group_name="", name=t_vnic3_name, order="3", qos_policy_name="",
                              adaptor_profile_name=t_vnic_adapter, ident_pool_name="", cdn_source="vnic-name",
-                             mtu="9000",
+                             mtu="1500",
                              nw_templ_name=t_vnic3_template, addr="derived")
             mo_7 = VnicEther(parent_mo_or_dn=mo, nw_ctrl_policy_name="", admin_host_port="ANY",
-                             admin_vcon="1", stats_policy_name="", admin_cdn_name="", switch_id="A",
+                             admin_vcon="1", stats_policy_name="", admin_cdn_name="", switch_id="A-B",
                              pin_to_group_name="", name=t_vnic2_name, order="2", qos_policy_name="",
                              adaptor_profile_name=t_vnic_adapter, ident_pool_name="", cdn_source="vnic-name",
-                             mtu="9000",
+                             mtu="1500",
                              nw_templ_name=t_vnic2_template, addr="derived")
-            mo_8 = VnicFcNode(parent_mo_or_dn=mo, ident_pool_name="node-default", addr="pool-derived")
+            mo_8 = VnicFcNode(parent_mo_or_dn=mo, ident_pool_name="global-node-default", addr="pool-derived")
             mo_9 = LsRequirement(parent_mo_or_dn=mo, restrict_migration="no", name=t_pool, qualifier="")
             mo_10 = LsPower(parent_mo_or_dn=mo, state="admin-up")
             mo_11 = LstorageProfileBinding(parent_mo_or_dn=mo, storage_profile_name=t_storage)
@@ -1271,7 +1336,7 @@ handle.commit()
             t_power = str(s_service_profiles['C220_templates'][key]['power'])
             t_scrub = str(s_service_profiles['C220_templates'][key]['scrub'])
 
-            mo = LsServer(parent_mo_or_dn=service_dn, vmedia_policy_name="", ext_ip_state="none",
+            mo = LsServer(parent_mo_or_dn=service_dn, vmedia_policy_name="", ext_ip_state="pooled",
                           bios_profile_name=t_bios, mgmt_fw_policy_name="", agent_policy_name="",
                           mgmt_access_policy_name="", dynamic_con_policy_name="",
                           sol_policy_name="", uuid="0", descr=t_descr, stats_policy_name="",
@@ -1287,18 +1352,18 @@ handle.commit()
             mo_3 = VnicDefBeh(parent_mo_or_dn=mo, name="", descr="", action="none", type="vhba",
                               nw_templ_name="")
             mo_4 = VnicEther(parent_mo_or_dn=mo, nw_ctrl_policy_name="", admin_host_port="ANY",
-                             admin_vcon="1", stats_policy_name="", admin_cdn_name="", switch_id="A",
+                             admin_vcon="1", stats_policy_name="", admin_cdn_name="", switch_id="A-B",
                              pin_to_group_name="", name=t_vnic1_name, order="1", qos_policy_name="",
                              adaptor_profile_name=t_vnic_adapter, ident_pool_name="", cdn_source="vnic-name",
                              mtu="1500",
                              nw_templ_name=t_vnic1_template, addr="derived")
             mo_5 = VnicEther(parent_mo_or_dn=mo, nw_ctrl_policy_name="", admin_host_port="ANY",
-                             admin_vcon="1", stats_policy_name="", admin_cdn_name="", switch_id="A",
+                             admin_vcon="1", stats_policy_name="", admin_cdn_name="", switch_id="A-B",
                              pin_to_group_name="", name=t_vnic2_name, order="2", qos_policy_name="",
                              adaptor_profile_name=t_vnic_adapter, ident_pool_name="", cdn_source="vnic-name",
                              mtu="9000",
                              nw_templ_name=t_vnic2_template, addr="derived")
-            mo_6 = VnicFcNode(parent_mo_or_dn=mo, ident_pool_name="node-default", addr="pool-derived")
+            mo_6 = VnicFcNode(parent_mo_or_dn=mo, ident_pool_name="global-node-default", addr="pool-derived")
             mo_7 = LsRequirement(parent_mo_or_dn=mo, restrict_migration="no", name=t_pool, qualifier="")
             mo_8 = LsPower(parent_mo_or_dn=mo, state="admin-up")
             mo_9 = LstorageProfileBinding(parent_mo_or_dn=mo, storage_profile_name=t_storage)
@@ -1370,10 +1435,22 @@ handle.commit()
 
         print "\n>>>>>>>>>>>>> UCSC Login <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"
 
+
+        print "############# Assigning UCS to Domain #################"
+
+        ucsm_ip = settings['ucsm']['credentials']['ip']
+        ucsm_domain_group = settings['ucsm']['credentials']['domain_group']
+
+        system_id = self.get_system_id(handle,ucsm_ip)
+        print "> Getting system_id...............................[OK]"
+
+        domain_assign_to_domaingroup(handle, domain_ip=ucsm_ip, domain_group=ucsm_domain_group)
+        print "> Assigned........................................[OK]"
+
         print "############# Creating Pools ##########################"
 
         s_pools = settings['ucsc']['pools']
-        pools = self.create_pools(s_pools)
+        pools = self.create_pools(s_pools,system_id)
 
         for key in pools:
             #print 'Type: ' + key
@@ -1381,6 +1458,14 @@ handle.commit()
                 #print key + ': ' + sub_key
                 handle.add_mo(pools[key][sub_key]['mo'], True)
                 handle.commit()
+
+        # wwnn global-node-default
+
+        mo = FcpoolInitiators(parent_mo_or_dn="org-root", name="global-node-default",
+                              descr="global-node-default", purpose="node-wwn-assignment")
+        mo_1 = FcpoolBlock(parent_mo_or_dn=mo, to="20:00:00:25:B5:00:00:63", r_from="20:00:00:25:B5:00:00:00")
+        handle.add_mo(mo,True)
+        handle.commit()
 
         print "############# Creating Policies #######################"
 
@@ -1400,7 +1485,7 @@ handle.commit()
         print "############# Creating Chassis Profiles ###############"
 
         s_chassis_profiles = settings['ucsc']['chassis_profiles']
-        chassis_profiles = self.create_chassis_profiles(s_chassis_profiles)
+        chassis_profiles = self.create_chassis_profiles(s_chassis_profiles,system_id)
 
         for key in chassis_profiles:
             #print 'Type: ' + key

@@ -2,17 +2,25 @@
     "ucsm": {
         "title": "ucsm configuration",
         "credentials": {
-            "ip": "lucsm2",
+            "ip": "192.168.0.202",
             "user": "ucspe",
-            "pw": "ucspe"
+            "pw": "ucspe",
+            "domain_group": "root"
         },
         "policies":{
             "timezone":"America/New_York (Eastern Time)",
             "ntp":{
                 "time.nist.gov":{
                     "dn":"sys/svc-ext/datetime-svc",
-                    "name":"time.nist.gov",
+                    "name":"216.229.0.179",
                     "descr":"ntp server"
+                }
+            },
+            "dns":{
+                "google_dns":{
+                    "dn":"sys/svc-ext/dns-svc",
+                    "name":"8.8.8.8",
+                    "descr":"Google DNS"
                 }
             },
             "general":{
@@ -161,6 +169,7 @@
             "pw": "UCScentral12"
         },
         "pools": {
+            "dn": "org-root",
             "kvm_ip":{
                 "ceph-ext-mgmt":{
                     "dn": "org-root",
@@ -193,21 +202,34 @@
             "server":{
                 "S3260-Node1":{
                     "name":"S3260-Node1",
+                    "type": "S3260",
                     "dn":"org-root",
-                    "descr":"Cisco UCS S3260 Top Node Server Pool"
+                    "descr":"Cisco UCS S3260 Top Node Server Pool",
+                    "slot": "1",
+                    "count": "5"
                 },
                 "S3260-Node2":{
                     "name":"S3260-Node2",
+                    "type": "S3260",
                     "dn":"org-root",
-                    "descr":"Cisco UCS S3260 Bottom Node Server Pool"
+                    "descr":"Cisco UCS S3260 Bottom Node Server Pool",
+                    "slot": "2",
+                    "count": "5"
                 },
                 "C220-M4S":{
                     "name":"C220-M4S",
+                    "type": "C220",
                     "dn":"org-root",
-                    "descr":"Cisco UCS C220M-M4S Server Pool"
+                    "descr":"Cisco UCS C220M-M4S Server Pool",
+                    "count":"4"
                 }
             },
             "vlan":{
+                "Default":{
+                    "name": "Default",
+                    "dn": "domaingroup-root/fabric/lan",
+                    "id": "1"
+                },
                 "Public":{
                     "name": "Public",
                     "dn": "domaingroup-root/fabric/lan",
@@ -453,7 +475,7 @@
                     "vnic_adapter":"RHEL",
                     "boot":"PXE-Boot",
                     "maint":"Server-Maint",
-                    "pool":"C220M4S",
+                    "pool":"C220-M4S",
                     "slot_id":"2",
                     "bios":"Ceph",
                     "power":"No-Power-Cap",

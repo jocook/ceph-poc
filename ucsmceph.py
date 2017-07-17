@@ -19,7 +19,7 @@ from ucsmsdk.mometa.qosclass.QosclassEthBE import QosclassEthBE
 from ucsmsdk.mometa.qosclass.QosclassFc import QosclassFc
 from ucsmsdk.mometa.fabric.FabricDceSwSrvEp import FabricDceSwSrvEp
 from ucsmsdk.mometa.fabric.FabricEthLanEp import FabricEthLanEp
-
+from ucsmsdk.mometa.comm.CommDnsProvider import CommDnsProvider
 
 class UcsmCeph:
     """UcsmCeph Class"""
@@ -52,6 +52,27 @@ class UcsmCeph:
         policies.update({'ntp': ntp_servers})
 
         print "> NTP.............................................[OK]"
+
+        """
+        DNS
+        """
+
+        dns_servers = {}
+
+        for key in s_policies['dns']:
+            d_dn = str(s_policies['dns'][key]['dn'])
+            d_name = str(s_policies['dns'][key]['name'])
+            d_descr = str(s_policies['dns'][key]['descr'])
+
+            mo = CommDnsProvider(parent_mo_or_dn=d_dn,
+                                 name=d_name, descr=d_descr)
+
+
+            dns_servers.update({key: {'mo':mo}})
+
+        policies.update({'dns': dns_servers})
+
+        print "> DNS.............................................[OK]"
 
         """
         General
