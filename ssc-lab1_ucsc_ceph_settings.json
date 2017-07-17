@@ -108,32 +108,32 @@
                 },
                 "sys/rack-unit-1":{
                     "dn":"sys/rack-unit-1",
-                    "label":"Ceph Mon 1",
+                    "label":"Ceph Rgw 1",
                     "lc":"discovered"
                 },
                 "sys/rack-unit-2":{
                     "dn":"sys/rack-unit-2",
-                    "label":"Ceph Mon 2",
+                    "label":"Ceph Rgw 2",
                     "lc":"discovered"
                 },
                 "sys/rack-unit-3":{
                     "dn":"sys/rack-unit-3",
-                    "label":"Ceph Mon 3",
+                    "label":"Ceph Rgw 3",
                     "lc":"discovered"
                 },
                 "sys/rack-unit-4":{
                     "dn":"sys/rack-unit-4",
-                    "label":"Ceph Mon 4",
+                    "label":"Ceph Mon 1",
                     "lc":"discovered"
                 },
                 "sys/rack-unit-5":{
                     "dn":"sys/rack-unit-5",
-                    "label":"Ceph Mon 5",
+                    "label":"Ceph Mon 2",
                     "lc":"discovered"
                 },
                 "sys/rack-unit-6":{
                     "dn":"sys/rack-unit-6",
-                    "label":"Ceph Mon 6",
+                    "label":"Ceph Mon 3",
                     "lc":"discovered"
                 },
                 "sys/rack-unit-7":{
