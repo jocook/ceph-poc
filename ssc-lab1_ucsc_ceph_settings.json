@@ -395,10 +395,10 @@
                 }
             },
             "C220":{
-                "C220-Boot":{
+                "C220":{
                     "dn": "org-root",
-                    "name": "C220-Boot",
-                    "descr": "Storage Profile for Ceph Monitor and Admin Nodes"
+                    "name": "C220",
+                    "descr": "Storage Policy for Ceph Rados Gateways, Monitor, and Admin Nodes"
                 }
             }
         },
@@ -454,7 +454,7 @@
                     "name":"UCS-C220M4S",
                     "descr":"UCS-C220M4S",
                     "uuid":"UCS-Ceph-UUID-Pool",
-                    "storage":"C220-Boot",
+                    "storage":"C220",
                     "vnic1_name":"Default",
                     "vnic2_name":"PublicA",
                     "vnic1_template":"Default-NIC",
