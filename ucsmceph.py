@@ -116,7 +116,7 @@ class UcsmCeph:
                 f_port = str(port)
                 f_key_port = "%s-%s" % (key, f_port)
                 mo = FabricDceSwSrvEp(parent_mo_or_dn=f_dn, name="", auto_negotiate="yes", usr_lbl="",
-                                  slot_id=f_slot_id, admin_state="enabled", port_id="1")
+                                  slot_id=f_slot_id, admin_state="enabled", port_id=f_port)
 
                 server_ports.update({f_key_port: {'mo': mo}})
 

@@ -20,8 +20,8 @@ if __name__ == "__main__":
         print "################UCSM Deployment #######################"
         print "#######################################################"
         ucsm.deploy(settings)
-        #print "Waiting 30 seconds..."
-        #time.sleep(30)
+        print "Waiting 30 seconds..."
+        time.sleep(30)
         print "\n#######################################################"
         print "################UCSC Deployment #######################"
         print "#######################################################"
